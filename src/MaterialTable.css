@@ -1,0 +1,292 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
+.dashboardTable {
+
+    background-color: #f8f8f8;
+    padding: 1.5rem 3rem 0.5rem 3rem;
+    min-height: 100vh;
+
+}
+
+.pageCard {
+    border-radius: 10px;
+
+    padding: 3rem 1rem;
+
+
+
+    background: #ffffff;
+    box-shadow: 5px 5px 7px #666666,
+        -5px -5px 7px #ffffff !important;
+}
+
+.MuiTableCell-root {
+
+    text-align: center;
+    padding: 5px 5px !important;
+    color: none;
+
+}
+
+.MuiToolbar-regular {
+    min-height: 2.5rem !important;
+    margin-top: 0.5rem !important;
+}
+
+div {
+    box-shadow: none !important;
+}
+
+th div {
+    position: relative !important;
+}
+
+.MuiTypography-h6 {
+    color: #000000;
+    font-size: 1.2rem !important;
+}
+
+.MuiTableCell-head {
+
+    z-index: 1 !important;
+    text-align: center !important;
+    background-color: #3d3a4f !important;
+    color: rgb(255, 255, 255) !important;
+}
+
+.MuiTablePagination-root {
+    border: none !important;
+}
+
+.MuiPaper-root {
+
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: small;
+    background: rgba(254, 254, 254, 0.5) !important;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px !important;
+    backdrop-filter: blur(4px) !important;
+    -webkit-backdrop-filter: blur(4px) !important;
+    border-radius: 10px;
+    border: 2px solid #3d3a4f !important;
+}
+
+.MuiTable-root {
+    border-top: 0px solid !important;
+
+
+}
+
+.MuiIconButton-root {
+    color: #E71E25 !important;
+}
+
+.pwd-container {
+    position: relative;
+    /* margin: 1rem 0; */
+}
+
+.pwd-container input {
+    border: none;
+    text-align: center;
+    /* width: 4rem; */
+    margin-left: 1rem;
+
+}
+
+.pwd-container img {
+    cursor: pointer;
+    position: absolute;
+    width: 17px;
+    right: 20px;
+    top: 24px;
+}
+
+.addbutton {
+    /* background: linear-gradient(315.76deg, #2A3A8F 25.04%, #77CEEC 100%); */
+    /* background-color: #184e77; */
+    color: white;
+    font-size: 0.9rem;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 2px;
+}
+
+.viewBtn {
+    /* background: linear-gradient(315.76deg, #2A3A8F 25.04%, #77CEEC 100%); */
+    /* background: #184e77; */
+    color: white;
+    width: 3rem;
+    font-weight: 500;
+    padding: 0.5rem;
+    font-size: 12px;
+    border: none;
+    border-radius: 3px;
+}
+
+.addRowBtn {
+    /* background: linear-gradient(315.76deg, #2A3A8F 25.04%, #77CEEC 100%); */
+    background: green;
+    color: white;
+    /* width: 5rem; */
+    font-weight: 500;
+    padding: 0.5rem;
+    font-size: 12px;
+    border: none;
+    border-radius: 3px;
+}
+
+.deleteRowBtn {
+    /* background: linear-gradient(315.76deg, #2A3A8F 25.04%, #77CEEC 100%); */
+    background: #ff0000;
+    color: white;
+    /* width: 10rem; */
+    font-weight: 500;
+    padding: 0.5rem;
+    font-size: 12px;
+    border: none;
+    border-radius: 3px;
+    margin-left: 1rem;
+}
+
+#acceptBtn {
+    background-color: green;
+    color: white;
+    /* display: none; */
+    width: 4rem;
+    font-weight: 500;
+    padding: 0.5rem;
+    font-size: 12px;
+    border: none;
+    border-radius: 3px;
+    text-overflow: ellipsis;
+    /* overflow: hidden; */
+    white-space: nowrap;
+}
+
+#rejectBtn {
+    background-color: red;
+    color: white;
+    width: 3rem;
+    font-size: 10px;
+    font-weight: 700;
+    border-radius: 3px;
+    border: none;
+    padding: 0.5rem;
+}
+
+#acceptBtnForHead {
+    background-color: green;
+    color: white;
+    /* display: none; */
+    width: 5rem;
+    font-weight: 700;
+    padding: 0.5rem;
+    font-size: 15px;
+    border: none;
+    border-radius: 3px;
+    text-overflow: ellipsis;
+    /* overflow: hidden; */
+    white-space: nowrap;
+}
+
+#rejectBtnForHead {
+    background-color: red;
+    color: white;
+    width: 5rem;
+    font-size: 15px;
+    font-weight: 700;
+    border-radius: 3px;
+    border: none;
+    padding: 0.5rem;
+}
+
+.totalWorkOrder {
+    display: flex;
+    justify-content: space-between;
+    /* background-color: #184e77; */
+    color: white;
+    border-radius: 5px;
+    height: 2rem;
+    padding: 0rem 0 0 0.5rem;
+}
+
+.tags {
+    color: white;
+    margin-top: 0.4rem;
+
+    font-weight: 550;
+}
+
+#status_button {
+    padding-top: 0.2rem;
+    font-weight: 650;
+
+    text-align: center;
+    background-color: white;
+    border: 0.5px solid #fafafa;
+    width: 2.3em;
+    margin-right: 1rem;
+    cursor: pointer;
+    height: 2.3em;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    border-radius: 50% !important;
+    margin-left: 1rem;
+}
+
+
+
+
+
+
+select {
+
+    border: 2px solid #8f8f8f;
+    border-radius: 3px;
+    padding: 0.2rem 0.5rem;
+
+    width: 8.5rem !important;
+
+
+
+
+    outline: none;
+}
+
+.selection_div {
+
+    display: flex;
+    justify-content: space-around;
+    overflow-x: scroll;
+}
+
+.selection_div div {
+    padding: 0.5rem;
+    width: 100%;
+}
+
+@media screen and (max-width: 600px) {
+    select {
+        width: 7rem;
+    }
+
+    .MTableToolbar-root-5 {
+        padding: 0 !important;
+    }
+
+    .totalWorkOrder {
+        display: flex;
+        justify-content: space-between !important;
+        /* background-color: #2A3A8F; */
+        color: white;
+        margin-right: -0.5rem;
+        border-radius: 5px;
+        /* height: 2.2rem; */
+        padding: 0 0 0 0.5rem;
+    }
+
+
+    .dashboardTable {
+        padding: 0;
+    }
+}
