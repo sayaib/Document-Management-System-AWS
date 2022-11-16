@@ -4,7 +4,6 @@ import AWS from "aws-sdk";
 import { Buffer } from "buffer";
 // import "./styles.css";
 import { saveAs } from 'file-saver';
-import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import MaterialTable from "@material-table/core";
 import './App.css'
 import './MaterialTable.css'
@@ -14,6 +13,9 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import { useQuery } from "@tanstack/react-query";
 import PropagateLoader from "react-spinners/PropagateLoader"
+import useLocalStorage from "use-local-storage";
+import { ExportCsv, ExportPdf } from "@material-table/exporters";
+import Swal from 'sweetalert2'
 
 
 
@@ -22,6 +24,7 @@ const App = () => {
   const [file, setfile] = useState(null)
 
   const [folderName, setfolderName] = useState([])
+  const [fileType, setfileType] = useLocalStorage("fileType", "All")
 
   AWS.config.update({
     accessKeyId: "",
@@ -67,9 +70,24 @@ const App = () => {
 
   const getData = async () => {
     try {
+      let finalData = [];
+      await S3.listObjectsV2({ Bucket: "my-dms-bucket-osl1" }).promise().then(data => {
+        for (let i = 0; i < data.Contents.length; i++) {
+          const keyName = data.Contents[i].Key;
+          const splitFolderName = keyName.substring(0, keyName.indexOf('/'));
 
-      const results = await S3.listObjectsV2({ Bucket: "my-dms-bucket-osl1" }).promise().then(data => {
-        return data;
+
+          // console.log(data[i].Contents)
+          if (fileType === splitFolderName) {
+            console.log(fileType, splitFolderName)
+            finalData.push(data.Contents[i])
+            // console.log(fileType, splitFolderName)
+          } else if (fileType === "All") {
+            finalData.push(data.Contents[i])
+          }
+        }
+        console.log(finalData)
+        return finalData;
       }).catch(function (err) {
         console.warn('Not exist folder exception is not catch here!');
         return false;
@@ -87,7 +105,7 @@ const App = () => {
       // }
       // setfolderName(folderName)
 
-      return results.Contents;
+      return finalData;
 
 
     } catch (error) {
@@ -95,7 +113,7 @@ const App = () => {
     }
   }
 
-  const { data, isLoading } = useQuery(['data'], getData)
+  const { data, isLoading, refetch } = useQuery(['data'], getData)
 
 
   console.log(folderName)
@@ -104,11 +122,12 @@ const App = () => {
   // useEffect(() => {
   //   getData()
   // }, [])
+  const colur = "red"
   const columns = [
     { title: "Key", field: "Key", width: "60%" },
     { title: "Storage Class", field: "StorageClass" },
     { title: "Size", field: "Size", },
-    // { title: "E Tag", field: "ETag", }
+
   ];
   const actions = [
     {
@@ -121,19 +140,21 @@ const App = () => {
         console.log(rowData.Key)
         try {
 
-          var params = { Bucket: "my-dms-bucket-osl1", Key: rowData.Key, Expires: 3600, ResponseContentDisposition: `attachment; filename=${rowData.Key}` };
-          var url = S3.getSignedUrl('getObject', params);
-          console.log(url)
-          fetch(url, { method: 'GET' })
-            .then(res => {
-              return res.blob();
-            })
-            .then(blob => {
-              saveAs(blob, `${rowData.Key}`);
-            })
-            .catch(err => {
-              console.error('err: ', err);
-            })
+          console.log(data)
+
+          // var params = { Bucket: "my-dms-bucket-osl1", Key: rowData.Key, Expires: 3600, ResponseContentDisposition: `attachment; filename=${rowData.Key}` };
+          // var url = S3.getSignedUrl('getObject', params);
+          // console.log(url)
+          // fetch(url, { method: 'GET' })
+          //   .then(res => {
+          //     return res.blob();
+          //   })
+          //   .then(blob => {
+          //     saveAs(blob, `${rowData.Key}`);
+          //   })
+          //   .catch(err => {
+          //     console.error('err: ', err);
+          //   })
 
 
           //var FileSaver = require('file-saver');
@@ -158,7 +179,15 @@ const App = () => {
           };
           S3.deleteObject(params, function (err, data) {
             if (data) {
-              console.log("File deleted successfully");
+              // console.log("File deleted successfully");
+              refetch();
+              Swal.fire({
+                position: "top",
+                icon: "success",
+                title: "Deleted successfully",
+                showConfirmButton: false,
+                timer: 1500,
+              });
             } else {
               console.log("Failed to delete")
             }
@@ -196,6 +225,10 @@ const App = () => {
       label: "Others",
       value: "Others",
     },
+    {
+      label: "All",
+      value: "All",
+    },
   ];
 
   const validationSchema = yup.object({
@@ -203,7 +236,7 @@ const App = () => {
   });
   const formik = useFormik({
     initialValues: {
-
+      file_type: "All"
 
     },
     validationSchema: validationSchema,
@@ -213,6 +246,7 @@ const App = () => {
   });
 
   const submitFile = async event => {
+
     event.preventDefault();
     const formData = new FormData();
     formData.append("file", file[0]);
@@ -223,8 +257,8 @@ const App = () => {
 
     const objParams = {
       Bucket: "my-dms-bucket-osl1",
-      Key: formik.values.file_type === "PDF" ?
-        ("PDF" + "/" + file[0].name) : formik.values.file_type === "XLX" ? ("XLX" + "/" + file[0].name) : formik.values.file_type === "DOC" ? ("DOC" + "/" + file[0].name) : formik.values.file_type === "Image" ? ("Image" + "/" + file[0].name) : formik.values.file_type === "Other" ? ("Other" + "/" + file[0].name) : "",
+      Key: fileType === "PDF" ?
+        ("PDF" + "/" + file[0].name) : fileType === "XLX" ? ("XLX" + "/" + file[0].name) : fileType === "DOC" ? ("DOC" + "/" + file[0].name) : fileType === "Image" ? ("Image" + "/" + file[0].name) : fileType === "Other" ? ("Other" + "/" + file[0].name) : "",
       Body: file[0],
       // Body: file,
       ContentType: 'application/pdf',
@@ -247,6 +281,14 @@ const App = () => {
           console.log(err.message);
         } else {
           console.log("SEND FINISHED", JSON.stringify(data));
+          refetch();
+          Swal.fire({
+            position: "top",
+            icon: "success",
+            title: "Uploaded successfully",
+            showConfirmButton: false,
+            timer: 1500,
+          });
         }
       });
   };
@@ -261,7 +303,7 @@ const App = () => {
       </>
     )
   }
-
+  console.log(fileType)
   return (
     <>
       <div className="materialTableDB">
@@ -271,19 +313,24 @@ const App = () => {
         <form onSubmit={submitFile}>
           <div>
             <div className="pwd-container">
-              <div>
+              {/* <div>
                 <span>File Type:</span>
-              </div>
+              </div> */}
 
-              <div>
+              <div className="select">
                 <select
                   // style={{ width: "100%", margin: "0" }}
                   name="file_type"
                   className="textSelectField"
                   fullWidth
                   select // label="Select"
-                  value={formik.values.file_type}
-                  onChange={formik.handleChange}
+                  value={fileType}
+                  onChange={
+                    async (e) => {
+                      await setfileType(e.target.value)
+                      refetch()
+                    }
+                  }
                   variant="standard"
                 >
                   <option selected disabled value="">
@@ -302,7 +349,7 @@ const App = () => {
             </div>
           </div>
 
-          {formik.values.file_type === undefined ? "" :
+          {fileType === "All" ? "" :
             <>
               <div style={{ display: "flex", alignItem: "center" }}>
                 <div>
@@ -311,8 +358,8 @@ const App = () => {
                     name="file-input"
                     id="file-input"
                     class="file-input__input"
-                    accept={formik.values.file_type === "PDF" ?
-                      "application/pdf" : formik.values.file_type === "XLX" ? ".csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" : formik.values.file_type === "DOC" ? "application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" : formik.values.file_type === "Image" ? "image/png, image/gif, image/jpeg" : ""}
+                    accept={fileType === "PDF" ?
+                      "application/pdf" : fileType === "XLX" ? ".csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" : fileType === "DOC" ? "application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" : fileType === "Image" ? "image/png, image/gif, image/jpeg" : ""}
 
                     onChange={handleFileUpload}
                   />
@@ -329,14 +376,40 @@ const App = () => {
             </>
           }
 
-          <div style={{ marginTop: "2rem" }} >
-            <MaterialTable title="DMS Data" columns={columns} data={data} actions={actions} options={{
-              actionsColumnIndex: -1
-            }} />
+          <div style={{ marginTop: "2rem" }} className="materialTable">
+            <MaterialTable
+              localization={{
+                header: {
+                  actions: "ACTIONS",
+                },
+                toolbar: {
+                  exportCSVName: "Export some Excel format",
+                  exportPDFName: "Export as pdf!!",
+                },
+              }}
+              title="DMS Data"
+              columns={columns}
+              data={data}
+              actions={actions}
+              options={{
+                exportMenu: [
+                  {
+                    label: "Export PDF",
+                    exportFunc: (cols, datas) => ExportPdf(cols, datas, "Admin"),
+                  },
+                  {
+                    label: "Export CSV",
+                    exportFunc: (cols, datas) => ExportCsv(cols, datas, "Admin"),
+                  },
+                ],
+                actionsColumnIndex: -1,
+                exportButton: true,
+                exportAllData: true,
+              }} />
           </div>
 
         </form>
-      </div>
+      </div >
     </>
   );
 
